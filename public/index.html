@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseSpider - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .page-card {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .page-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+        
+        .page-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .page-card h2 {
+            color: #4a5568;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .page-card p {
+            color: #718096;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .page-card .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+        
+        .status-bar {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            margin-top: 30px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .pages-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 CourseSpider</h1>
+            <p>YouTube Course Collection & Management System</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3 id="totalCourses">-</h3>
+                <p>Courses</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalLessons">-</h3>
+                <p>Lessons</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalHours">-</h3>
+                <p>Hours</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalCategories">-</h3>
+                <p>Categories</p>
+            </div>
+        </div>
+        
+        <div class="pages-grid">
+            <a href="admin.html" class="page-card">
+                <div class="page-icon">🚀</div>
+                <h2>Collector Dashboard</h2>
+                <p>Start new collection jobs, monitor progress in real-time, and configure collection settings.</p>
+                <span class="badge">Admin</span>
+            </a>
+            
+            <a href="database.html" class="page-card">
+                <div class="page-icon">🗄️</div>
+                <h2>Database Viewer</h2>
+                <p>View all courses in table format, search, filter, sort, and manage your course database.</p>
+                <span class="badge">Admin</span>
+            </a>
+            
+            <a href="browse.html" class="page-card">
+                <div class="page-icon">📚</div>
+                <h2>Browse Courses</h2>
+                <p>User-friendly interface to explore and search through all collected YouTube courses.</p>
+                <span class="badge">Public</span>
+            </a>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>System Online</span>
+            </div>
+            <div id="apiStatus">Checking API...</div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    document.getElementById('totalCourses').textContent = stats.total_courses;
+                    document.getElementById('totalLessons').textContent = stats.total_lessons;
+                    document.getElementById('totalHours').textContent = Math.round(stats.total_duration_hours) + 'h';
+                    document.getElementById('totalCategories').textContent = Object.keys(stats.by_category).length;
+                    document.getElementById('apiStatus').textContent = 'API Connected ✓';
+                }
+            } catch (error) {
+                document.getElementById('totalCourses').textContent = '0';
+                document.getElementById('totalLessons').textContent = '0';
+                document.getElementById('totalHours').textContent = '0h';
+                document.getElementById('totalCategories').textContent = '0';
+                document.getElementById('apiStatus').textContent = 'API Offline ✗';
+                document.getElementById('apiStatus').style.color = '#fc8181';
+            }
+        }
+        
+        // Load on page load
+        loadStats();
+    </script>
+</body>
+</html>

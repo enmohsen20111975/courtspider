@@ -1,0 +1,35 @@
+{
+  "name": "courtspider",
+  "version": "2.0.0",
+  "description": "CourseSpider - Comprehensive YouTube Course Database Collector & Browser",
+  "main": "api_server.js",
+  "scripts": {
+    "collect": "node enhanced_collector.js",
+    "database": "node database.js",
+    "api": "node api_server.js",
+    "start": "node api_server.js",
+    "web": "python python_server.py",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "googleapis": "^128.0.0",
+    "sqlite3": "^5.1.6",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "youtube",
+    "courses",
+    "education",
+    "database",
+    "api",
+    "search",
+    "filter"
+  ],
+  "author": "CourseSpider",
+  "license": "MIT"
+}

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseSpider - Browse Courses</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+        
+        .filter-group {
+            margin-bottom: 25px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+        
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .filter-group input[type="range"] {
+            padding: 0;
+        }
+        
+        .range-value {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #667eea;
+            margin-top: 5px;
+        }
+        
+        .btn-filter {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-filter:hover {
+            background: #5568d3;
+        }
+        
+        .btn-clear {
+            width: 100%;
+            padding: 10px;
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        
+        .content {
+            min-height: 80vh;
+        }
+        
+        .stats-bar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stat-icon {
+            font-size: 1.5rem;
+        }
+        
+        .stat-info {
+            line-height: 1.4;
+        }
+        
+        .stat-number {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+        
+        .search-bar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .search-bar button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .course-thumbnail {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .course-content {
+            padding: 20px;
+        }
+        
+        .course-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .course-author {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        
+        .course-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .tag-category {
+            background: #e6fffa;
+            color: #047857;
+        }
+        
+        .tag-language {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #718096;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .pagination button {
+            padding: 10px 20px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination .page-info {
+            padding: 0 20px;
+            font-weight: 500;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+        
+        .modal-header {
+            padding: 30px;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f7fafc;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: #e2e8f0;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .course-detail-section {
+            margin-bottom: 30px;
+        }
+        
+        .course-detail-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .lesson-list {
+            list-style: none;
+        }
+        
+        .lesson-item {
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.3s;
+        }
+        
+        .lesson-item:hover {
+            background: #e6fffa;
+        }
+        
+        .lesson-number {
+            font-weight: 700;
+            color: #667eea;
+            min-width: 30px;
+        }
+        
+        .lesson-title {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .lesson-duration {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>🎓 CourseSpider Database</h1>
+            <p>Browse thousands of free YouTube courses</p>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <!-- Sidebar Filters -->
+        <div class="sidebar">
+            <h3>🔍 Filters</h3>
+            
+            <div class="filter-group">
+                <label>Category</label>
+                <select id="filterCategory">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Language</label>
+                <select id="filterLanguage">
+                    <option value="">All Languages</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Minimum Lessons</label>
+                <input type="range" id="filterMinLessons" min="0" max="100" value="0">
+                <div class="range-value" id="minLessonsValue">0 lessons</div>
+            </div>
+            
+            <div class="filter-group">
+                <label>Maximum Duration (hours)</label>
+                <input type="range" id="filterMaxDuration" min="1" max="50" value="50">
+                <div class="range-value" id="maxDurationValue">50 hours</div>
+            </div>
+            
+            <div class="filter-group">
+                <label>Sort By</label>
+                <select id="filterSort">
+                    <option value="created_at">Recently Added</option>
+                    <option value="lesson_count">Most Lessons</option>
+                    <option value="duration_min">Longest Duration</option>
+                    <option value="title">Alphabetical</option>
+                </select>
+            </div>
+            
+            <button class="btn-filter" onclick="applyFilters()">Apply Filters</button>
+            <button class="btn-clear" onclick="clearFilters()">Clear All</button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="statCourses">-</div>
+                        <div class="stat-label">Courses</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">🎬</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="statLessons">-</div>
+                        <div class="stat-label">Lessons</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="statHours">-</div>
+                        <div class="stat-label">Hours</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">🌍</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="statLanguages">-</div>
+                        <div class="stat-label">Languages</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search courses by title, description, author...">
+                <button onclick="searchCourses()">Search</button>
+            </div>
+            
+            <!-- Courses Grid -->
+            <div id="coursesContainer">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading courses...</p>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination" style="display: none;">
+                <button onclick="previousPage()" id="btnPrev">Previous</button>
+                <span class="page-info" id="pageInfo">Page 1 of 1</span>
+                <button onclick="nextPage()" id="btnNext">Next</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course Detail Modal -->
+    <div class="modal" id="courseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2 id="modalTitle">Course Title</h2>
+                <div id="modalMeta"></div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Course details will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentFilters = {};
+        
+        // Initialize
+        async function init() {
+            await loadStats();
+            await loadFilterOptions();
+            await loadCourses();
+            
+            // Event listeners for range sliders
+            document.getElementById('filterMinLessons').addEventListener('input', (e) => {
+                document.getElementById('minLessonsValue').textContent = `${e.target.value} lessons`;
+            });
+            
+            document.getElementById('filterMaxDuration').addEventListener('input', (e) => {
+                document.getElementById('maxDurationValue').textContent = `${e.target.value} hours`;
+            });
+            
+            // Search on Enter
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchCourses();
+            });
+        }
+        
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const result = await response.json();
+                const stats = result.data;
+                
+                document.getElementById('statCourses').textContent = stats.total_courses.toLocaleString();
+                document.getElementById('statLessons').textContent = stats.total_lessons.toLocaleString();
+                document.getElementById('statHours').textContent = stats.total_duration_hours.toLocaleString();
+                document.getElementById('statLanguages').textContent = Object.keys(stats.by_language).length;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // Load filter options
+        async function loadFilterOptions() {
+            try {
+                // Load categories
+                const catResponse = await fetch(`${API_BASE}/categories`);
+                const catResult = await catResponse.json();
+                const categories = catResult.data;
+                
+                const catSelect = document.getElementById('filterCategory');
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.name;
+                    option.textContent = `${cat.name} (${cat.count})`;
+                    catSelect.appendChild(option);
+                });
+                
+                // Load languages
+                const langResponse = await fetch(`${API_BASE}/languages`);
+                const langResult = await langResponse.json();
+                const languages = langResult.data;
+                
+                const langSelect = document.getElementById('filterLanguage');
+                languages.forEach(lang => {
+                    const option = document.createElement('option');
+                    option.value = lang.name;
+                    option.textContent = `${lang.name} (${lang.count})`;
+                    langSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading filter options:', error);
+            }
+        }
+        
+        // Load courses
+        async function loadCourses(page = 1) {
+            try {
+                const params = new URLSearchParams({
+                    limit: 12,
+                    offset: (page - 1) * 12,
+                    ...currentFilters
+                });
+                
+                const response = await fetch(`${API_BASE}/courses?${params}`);
+                const result = await response.json();
+                
+                displayCourses(result.data);
+                
+                // Handle pagination safely
+                if (result.pagination) {
+                    updatePagination(result.pagination);
+                } else {
+                    // Create default pagination if missing
+                    const totalCourses = result.data?.length || 0;
+                    updatePagination({
+                        page: page,
+                        limit: 12,
+                        total: totalCourses,
+                        total_pages: Math.ceil(totalCourses / 12)
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading courses:', error);
+                document.getElementById('coursesContainer').innerHTML = `
+                    <div class="no-results">
+                        <h3>Error loading courses</h3>
+                        <p>Please make sure the API server is running on port 5000</p>
+                        <p style="color: #e53e3e; margin-top: 10px;">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Display courses
+        function displayCourses(courses) {
+            const container = document.getElementById('coursesContainer');
+            
+            if (!courses || courses.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <h3>No courses found</h3>
+                        <p>Try adjusting your filters or search criteria</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const grid = document.createElement('div');
+            grid.className = 'courses-grid';
+            
+            courses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.onclick = () => openCourseDetail(course.id);
+                
+                card.innerHTML = `
+                    <img src="${course.thumbnail || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzY2N2VlYSIvPjwvc3ZnPg=='}" 
+                         alt="${course.title}" 
+                         class="course-thumbnail"
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzY2N2VlYSIvPjwvc3ZnPg=='; this.onerror=null;">
+                    <div class="course-content">
+                        <h3 class="course-title">${course.title}</h3>
+                        <div class="course-author">👤 ${course.author_name}</div>
+                        <div class="course-tags">
+                            <span class="tag tag-category">${course.category}</span>
+                            <span class="tag tag-language">${course.language_name}</span>
+                        </div>
+                        <div class="course-meta">
+                            <span>📚 ${course.lesson_count} lessons</span>
+                            <span>⏱️ ${Math.round(course.duration_min / 60)}h</span>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            container.innerHTML = '';
+            container.appendChild(grid);
+        }
+        
+        // Update pagination
+        function updatePagination(pagination) {
+            currentPage = pagination.page;
+            totalPages = pagination.total_pages;
+            
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('btnPrev').disabled = currentPage === 1;
+            document.getElementById('btnNext').disabled = currentPage === totalPages;
+            document.getElementById('pagination').style.display = totalPages > 1 ? 'flex' : 'none';
+        }
+        
+        // Pagination controls
+        function previousPage() {
+            if (currentPage > 1) {
+                loadCourses(currentPage - 1);
+            }
+        }
+        
+        function nextPage() {
+            if (currentPage < totalPages) {
+                loadCourses(currentPage + 1);
+            }
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            currentFilters = {};
+            
+            const category = document.getElementById('filterCategory').value;
+            if (category) currentFilters.category = category;
+            
+            const language = document.getElementById('filterLanguage').value;
+            if (language) currentFilters.language_name = language;
+            
+            const minLessons = document.getElementById('filterMinLessons').value;
+            if (minLessons > 0) currentFilters.min_lessons = minLessons;
+            
+            const maxDuration = document.getElementById('filterMaxDuration').value;
+            if (maxDuration < 50) currentFilters.max_duration = maxDuration * 60;
+            
+            const sort = document.getElementById('filterSort').value;
+            currentFilters.sort = sort;
+            currentFilters.order = 'DESC';
+            
+            loadCourses(1);
+        }
+        
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterLanguage').value = '';
+            document.getElementById('filterMinLessons').value = '0';
+            document.getElementById('filterMaxDuration').value = '50';
+            document.getElementById('filterSort').value = 'created_at';
+            document.getElementById('minLessonsValue').textContent = '0 lessons';
+            document.getElementById('maxDurationValue').textContent = '50 hours';
+            document.getElementById('searchInput').value = '';
+            
+            currentFilters = {};
+            loadCourses(1);
+        }
+        
+        // Search courses
+        function searchCourses() {
+            const query = document.getElementById('searchInput').value;
+            if (query) {
+                currentFilters.search = query;
+            } else {
+                delete currentFilters.search;
+            }
+            loadCourses(1);
+        }
+        
+        // Open course detail modal
+        async function openCourseDetail(courseId) {
+            try {
+                const response = await fetch(`${API_BASE}/courses/${courseId}`);
+                const result = await response.json();
+                const course = result.data;
+                
+                document.getElementById('modalTitle').textContent = course.title;
+                document.getElementById('modalMeta').innerHTML = `
+                    <div style="margin-top: 10px; display: flex; gap: 15px; flex-wrap: wrap; font-size: 0.9rem; color: #718096;">
+                        <span>👤 ${course.author_name}</span>
+                        <span>📚 ${course.lesson_count} lessons</span>
+                        <span>⏱️ ${Math.round(course.duration_min / 60)}h ${course.duration_min % 60}m</span>
+                        <span>🌍 ${course.language_name}</span>
+                        <span>📁 ${course.category}</span>
+                    </div>
+                `;
+                
+                let bodyHTML = `
+                    <div class="course-detail-section">
+                        <h3>📝 Description</h3>
+                        <p style="line-height: 1.6; color: #4a5568;">${course.description || 'No description available'}</p>
+                    </div>
+                    
+                    <div class="course-detail-section">
+                        <h3>🔗 Watch on YouTube</h3>
+                        <a href="${course.url}" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">
+                            ${course.url}
+                        </a>
+                    </div>
+                `;
+                
+                if (course.lessons && course.lessons.length > 0) {
+                    bodyHTML += `
+                        <div class="course-detail-section">
+                            <h3>📋 Lessons (${course.lessons.length})</h3>
+                            <ul class="lesson-list">
+                    `;
+                    
+                    course.lessons.forEach(lesson => {
+                        bodyHTML += `
+                            <li class="lesson-item">
+                                <span class="lesson-number">${lesson.idx}</span>
+                                <span class="lesson-title">${lesson.title}</span>
+                                <span class="lesson-duration">${lesson.duration_min} min</span>
+                            </li>
+                        `;
+                    });
+                    
+                    bodyHTML += `
+                            </ul>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('modalBody').innerHTML = bodyHTML;
+                document.getElementById('courseModal').classList.add('active');
+            } catch (error) {
+                console.error('Error loading course detail:', error);
+                alert('Error loading course details');
+            }
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('courseModal').classList.remove('active');
+        }
+        
+        // Close modal on background click
+        document.getElementById('courseModal').addEventListener('click', (e) => {
+            if (e.target.id === 'courseModal') {
+                closeModal();
+            }
+        });
+        
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
