@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Programming Courses - YouTube Course Library</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Free Programming Courses</h1>
+            <p class="subtitle">Curated YouTube courses to learn programming - completely free!</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3 id="totalCourses">0</h3>
+                <p>Total Courses</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalLessons">0</h3>
+                <p>Total Lessons</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalHours">0</h3>
+                <p>Hours of Content</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalCategories">0</h3>
+                <p>Categories</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search courses...">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                </select>
+                <select id="languageFilter">
+                    <option value="">All Languages</option>
+                </select>
+                <button onclick="applyFilters()">Search</button>
+            </div>
+        </div>
+
+        <div id="coursesContainer" class="loading">
+            Loading courses...
+        </div>
+
+        <div id="pagination" class="pagination" style="display: none;">
+            <button id="btnPrev" onclick="previousPage()" disabled>← Previous</button>
+            <span class="page-info" id="pageInfo">Page 1 of 1</span>
+            <button id="btnNext" onclick="nextPage()" disabled>Next →</button>
+        </div>
+    </div>
+
+    <!-- Course Detail Modal -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeModal()">×</button>
+                <h2 id="modalTitle">Course Title</h2>
+                <p id="modalAuthor" style="color: #718096; margin-top: 10px;"></p>
+            </div>
+            <div class="modal-body">
+                <div id="videoError" class="video-error" style="display: none;">
+                    <h4>⚠️ Video Cannot Be Embedded</h4>
+                    <p>YouTube restricts video embedding on localhost or the content owner disabled it.</p>
+                    <p style="margin-top: 10px;"><strong>Solution:</strong> Click below to watch on YouTube:</p>
+                    <button onclick="openCurrentVideoOnYouTube()">🎬 Open on YouTube</button>
+                </div>
+                <div id="videoInfo" style="background: #e6f2ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: none;">
+                    <p style="margin: 0; color: #0066cc; font-size: 0.9em;">
+                        💡 <strong>Note:</strong> Videos may not play on localhost. Deploy to a real domain or click "YouTube" buttons to watch.
+                    </p>
+                </div>
+                <div class="video-container">
+                    <iframe 
+                        id="videoPlayer" 
+                        src="" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen
+                        referrerpolicy="strict-origin-when-cross-origin">
+                    </iframe>
+                </div>
+                <div class="lessons-list">
+                    <h3 style="margin-bottom: 15px;">📋 Course Lessons</h3>
+                    <div id="lessonsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load SQL.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    
+    <!-- Load main application script -->
+    <script src="app.js"></script>
+</body>
+</html>
